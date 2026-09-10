@@ -23,4 +23,8 @@ import Testing
         #expect(Enum.defaultMultiple == .defaultMultiple(x: 1, y: "hello", z: nil))
         #expect(Enum.defaultUnlabeled == .defaultUnlabeled(42))
     }
+
+    @Test static func UnsugaredPayload() {
+        #expect(AmbientTests.Unsugared.defaulted == .defaulted(42))
+    }
 }

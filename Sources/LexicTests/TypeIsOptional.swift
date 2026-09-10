@@ -10,12 +10,12 @@ import Testing
 
     @Test static func Unsugared() {
         let type: TypeSyntax = "Optional<Int>"
-        #expect(type.isOptional)
+        #expect(type.isOptional == false)
     }
 
     @Test static func Qualified() {
         let type: TypeSyntax = "Swift.Optional<Int>"
-        #expect(type.isOptional)
+        #expect(type.isOptional == false)
     }
 
     @Test static func Parenthesized() {
@@ -23,7 +23,7 @@ import Testing
         #expect(sugared.isOptional)
 
         let unsugared: TypeSyntax = "(Optional<Int>)"
-        #expect(unsugared.isOptional)
+        #expect(unsugared.isOptional == false)
     }
 
     @Test static func Attributed() {

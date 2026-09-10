@@ -34,6 +34,13 @@ extension AmbientMacro: MemberMacro {
                 var canSynthesize: Bool = true
 
                 for parameter: EnumCaseParameterSyntax in parameters {
+                    if  parameter.type.isUnsugaredOptional {
+                        context[.warning, parameter.type] = """
+                        spelling ‘\(parameter.type)’ will not be optimized; \
+                        use sugared optional ‘?’ instead
+                        """
+                    }
+
                     let isOptional: Bool = parameter.type.isOptional
                     if  let defaultValue: InitializerClauseSyntax = parameter.defaultValue {
                         let value: String = defaultValue.value.trimmedDescription
@@ -50,7 +57,6 @@ extension AmbientMacro: MemberMacro {
                         }
                     } else {
                         canSynthesize = false
-                        break
                     }
                 }
 

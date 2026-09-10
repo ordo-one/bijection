@@ -120,9 +120,6 @@ extension TypeSyntax {
         if  self.is(OptionalTypeSyntax.self) {
             return true
         }
-        if  self.isUnsugaredOptional {
-            return true
-        }
         if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
             return attributed.baseType.isOptional
         }
