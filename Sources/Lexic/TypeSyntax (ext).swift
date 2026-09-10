@@ -35,13 +35,8 @@ extension TypeSyntax {
                 return true
             }
             switch self.name.tokenKind {
-            case .identifier(let identifier):
-                var identifier: Substring = identifier.drop { $0 == "`" }
-                while case "`"? = identifier.last {
-                    identifier.removeLast()
-                }
-
-                return symbol == identifier
+            case .identifier:
+                return self.name.unescaped == symbol
 
             case .keyword(.Self):
                 return symbol == "Self"
@@ -94,5 +89,49 @@ extension TypeSyntax {
         default:
             return false
         }
+    }
+
+    public var isUnsugaredOptional: Bool {
+        if  let identifier: IdentifierTypeSyntax = self.as(IdentifierTypeSyntax.self) {
+            return identifier.name.unescaped == "Optional"
+                && identifier.genericArgumentClause?.arguments.count == 1
+        }
+        if  let member: MemberTypeSyntax = self.as(MemberTypeSyntax.self) {
+            guard
+            member.name.unescaped == "Optional",
+            member.genericArgumentClause?.arguments.count == 1,
+            let base: IdentifierTypeSyntax = member.baseType.as(
+                IdentifierTypeSyntax.self
+            ) else {
+                return false
+            }
+            return base.name.unescaped == "Swift"
+        }
+        if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
+            return attributed.baseType.isUnsugaredOptional
+        }
+        if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
+                tuple.elements.count == 1,
+            let first: TupleTypeElementSyntax = tuple.elements.first,
+                first.firstName == nil {
+            return first.type.isUnsugaredOptional
+        }
+        return false
+    }
+
+    public var isOptional: Bool {
+        if  self.is(OptionalTypeSyntax.self) {
+            return true
+        }
+        if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
+            return attributed.baseType.isOptional
+        }
+        if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
+                tuple.elements.count == 1,
+            let first: TupleTypeElementSyntax = tuple.elements.first,
+                first.firstName == nil {
+            return first.type.isOptional
+        }
+        return false
     }
 }
