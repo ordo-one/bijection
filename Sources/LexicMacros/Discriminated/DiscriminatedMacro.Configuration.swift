@@ -1,17 +1,17 @@
 import Lexic
 import SwiftSyntax
 
-extension ScopedUnionMacro {
+extension DiscriminatedMacro {
     struct Configuration {
-        let peerTypeName: String
+        let discriminant: String?
         let backing: TypeSyntax?
         let project: [String]
         let flatten: Bool
     }
 }
-extension ScopedUnionMacro.Configuration: ExpressionListDecodable {
+extension DiscriminatedMacro.Configuration: ExpressionListDecodable {
     enum CodingKey: String, Sendable {
-        case peerTypeName = "_"
+        case discriminant
         case backing
         case project
         case flatten
@@ -19,7 +19,7 @@ extension ScopedUnionMacro.Configuration: ExpressionListDecodable {
 
     init(from list: inout ExpressionListDecoder<CodingKey>) throws {
         self.init(
-            peerTypeName: try list[.peerTypeName]?.decode() ?? "Type",
+            discriminant: try list[.discriminant]?.decode(),
             backing: try list[.backing]?.decode(to: MetatypeExpression?.self)?.type,
             project: try list[.project]?.decode() ?? [],
             flatten: try list[.flatten]?.decode() ?? true

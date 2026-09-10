@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("IntBackedType", backing: Int.self)
+extension DiscriminatedUnions {
+    @Discriminated(backing: Int.self)
     enum IntBacked: Equatable {
         case low
         case medium

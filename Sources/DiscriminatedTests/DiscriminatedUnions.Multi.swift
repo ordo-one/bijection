@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("MultiType", project: ["owner", "count"])
+extension DiscriminatedUnions {
+    @Discriminated(project: ["owner", "count"])
     enum Multi: Equatable {
         case text(String?)
         case numbers([Int]?)

@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("ActionType")
+extension DiscriminatedUnions {
+    @Discriminated
     enum Action: Equatable {
         case start
         case stop

@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("UnsugaredType", project: ["tag"])
+extension DiscriminatedUnions {
+    @Discriminated(project: ["tag"])
     enum Unsugared: Equatable {
         case item(Int?)
         case other(String?)

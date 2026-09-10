@@ -2,8 +2,8 @@ import Lexic
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-struct ScopedUnionMacro {}
-extension ScopedUnionMacro {
+struct DiscriminatedMacro {}
+extension DiscriminatedMacro {
     static func cases(of decl: EnumDeclSyntax) -> [Case] {
         var cases: [Case] = []
         for member: MemberBlockItemSyntax in decl.memberBlock.members {
@@ -19,14 +19,14 @@ extension ScopedUnionMacro {
         return cases
     }
 }
-extension ScopedUnionMacro: PeerMacro {
+extension DiscriminatedMacro: PeerMacro {
     static func expansion(
         of attribute: AttributeSyntax,
         providingPeersOf decl: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@ScopedUnion' must be applied to an enum"
+            context[.error, decl] = "'@Discriminated' must be applied to an enum"
             return []
         }
 
@@ -71,10 +71,11 @@ extension ScopedUnionMacro: PeerMacro {
             ": CaseIterable, Sendable"
         }
 
+        let peerTypeName: String = configuration.discriminant ?? "\(decl.name.text)Type"
         let peer: DeclSyntax = """
         \(AttributeListSyntax.init(attributesOnType))\
         \(decl.modifiers)enum \(
-            raw: configuration.peerTypeName
+            raw: peerTypeName
         )\(raw: inheritance) {
         \(casesList)
         }
@@ -83,7 +84,7 @@ extension ScopedUnionMacro: PeerMacro {
         return [peer]
     }
 }
-extension ScopedUnionMacro: MemberMacro {
+extension DiscriminatedMacro: MemberMacro {
     static func expansion(
         of attribute: AttributeSyntax,
         providingMembersOf decl: some DeclGroupSyntax,
@@ -91,7 +92,7 @@ extension ScopedUnionMacro: MemberMacro {
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@ScopedUnion' must be applied to an enum"
+            context[.error, decl] = "'@Discriminated' must be applied to an enum"
             return []
         }
 
@@ -103,9 +104,10 @@ extension ScopedUnionMacro: MemberMacro {
         var members: [DeclSyntax] = []
 
         // 1. Discriminator ‘type’ property
+        let peerTypeName: String = configuration.discriminant ?? "\(decl.name.text)Type"
         let typeCases: [String] = cases.map { "case .\($0.name): .\($0.name)" }
         let typeProperty: DeclSyntax = """
-        @inlinable \(decl.modifiers)var type: \(raw: configuration.peerTypeName) {
+        @inlinable \(decl.modifiers)var type: \(raw: peerTypeName) {
             switch self {
             \(raw: typeCases.joined(separator: "\n    "))
             }

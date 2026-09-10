@@ -1,8 +1,8 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("UnflattenedType", project: ["tag"], flatten: false)
-    enum Unflattened: Equatable {
+extension DiscriminatedUnions {
+    @Discriminated(project: ["tag"])
+    enum Flattened: Equatable {
         case item(Int?)
         case other(String?)
         case plain

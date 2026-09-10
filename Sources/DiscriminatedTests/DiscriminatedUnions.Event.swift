@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("EventType", project: ["id"])
+extension DiscriminatedUnions {
+    @Discriminated(project: ["id"])
     enum Event: Equatable {
         case click(Int?)
         case hover(String?)

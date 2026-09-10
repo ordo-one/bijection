@@ -1,7 +1,7 @@
-import ScopedUnion
+import Discriminated
 
-extension ScopedUnions {
-    @ScopedUnion("LabeledType")
+extension DiscriminatedUnions {
+    @Discriminated
     enum Labeled: Equatable {
         case single(value: Int?)
         case multi(first: Int?, second: String?)

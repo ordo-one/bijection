@@ -4,12 +4,12 @@
 ) @attached(
     member,
     names: named(type), arbitrary
-) public macro ScopedUnion(
-    _ peerTypeName: String,
+) public macro Discriminated(
+    discriminant: String? = nil,
     backing: Any.Type? = nil,
     project: [String] = [],
     flatten: Bool = true
 ) = #externalMacro(
     module: "LexicMacros",
-    type: "ScopedUnionMacro"
+    type: "DiscriminatedMacro"
 )

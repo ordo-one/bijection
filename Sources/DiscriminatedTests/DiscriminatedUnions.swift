@@ -1,6 +1,6 @@
 import Testing
 
-@Suite struct ScopedUnions {
+@Suite struct DiscriminatedUnions {
     @Test static func PureDiscriminator() {
         #expect(Action.start.type == .start)
         #expect(Action.stop.type == .stop)
@@ -10,6 +10,12 @@ import Testing
         #expect(ActionType.allCases == [.start, .stop, .reset])
 
         #expect(Action.reset == .reset(nil))
+    }
+
+    @Test static func ExplicitDiscriminant() {
+        #expect(Custom.first.type == .first)
+        #expect(Custom.second(10).type == .second)
+        #expect(CustomTypeName.allCases == [.first, .second])
     }
 
     @Test static func SingleProjection() {
