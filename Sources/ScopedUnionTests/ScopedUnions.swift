@@ -1,39 +1,6 @@
-import ScopedUnion
 import Testing
 
-@Suite struct ScopedUnionMacroTests {
-    @ScopedUnion("ActionType")
-    enum Action: Equatable {
-        case start
-        case stop
-        case reset(Int?)
-    }
-
-    @ScopedUnion("EventType", project: ["id"])
-    enum Event: Equatable {
-        case click(Int?)
-        case hover(String?)
-        case scroll
-
-        @inline(always) static func id(_ value: some CustomStringConvertible) -> String {
-            value.description
-        }
-    }
-
-    @ScopedUnion("MultiType", project: ["owner", "count"])
-    enum Multi: Equatable {
-        case text(String?)
-        case numbers(Array<Int>?)
-        case none
-
-        @inline(always) static func owner(_ value: some CustomStringConvertible) -> String {
-            value.description
-        }
-        @inline(always) static func count(_ value: some Collection) -> Int {
-            value.count
-        }
-    }
-
+@Suite struct ScopedUnions {
     @Test static func PureDiscriminator() {
         #expect(Action.start.type == .start)
         #expect(Action.stop.type == .stop)
@@ -73,13 +40,6 @@ import Testing
         #expect(Multi.numbers.count == nil)
         #expect(Multi.none.owner == nil)
         #expect(Multi.none.count == nil)
-    }
-
-    @ScopedUnion("LabeledType")
-    enum Labeled: Equatable {
-        case single(value: Int?)
-        case multi(first: Int?, second: String?)
-        case plain
     }
 
     @Test static func LabeledAndMultiParameter() {

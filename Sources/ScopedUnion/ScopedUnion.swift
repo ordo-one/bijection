@@ -1,12 +1,10 @@
 @attached(
     peer,
     names: arbitrary
-)
-@attached(
+) @attached(
     member,
     names: named(type), arbitrary
-)
-public macro ScopedUnion(
+) public macro ScopedUnion(
     _ peerTypeName: String,
     project: [String] = []
 ) = #externalMacro(

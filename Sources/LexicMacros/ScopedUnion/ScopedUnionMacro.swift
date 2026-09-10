@@ -2,14 +2,17 @@ import Lexic
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-struct ScopedUnionMacro {
+struct ScopedUnionMacro {}
+extension ScopedUnionMacro {
     static func cases(of decl: EnumDeclSyntax) -> [Case] {
         var cases: [Case] = []
         for member: MemberBlockItemSyntax in decl.memberBlock.members {
-            guard let caseDecl: EnumCaseDeclSyntax = member.decl.as(EnumCaseDeclSyntax.self) else {
+            guard let enumCase: EnumCaseDeclSyntax = member.decl.as(
+                EnumCaseDeclSyntax.self
+            ) else {
                 continue
             }
-            for element: EnumCaseElementSyntax in caseDecl.elements {
+            for element: EnumCaseElementSyntax in enumCase.elements {
                 cases.append(.init(from: element))
             }
         }
@@ -27,11 +30,11 @@ extension ScopedUnionMacro: PeerMacro {
             return []
         }
 
-        guard let config: Configuration = .init(decoding: attribute, in: context) else {
+        guard let configuration: Configuration = .init(decoding: attribute, in: context) else {
             return []
         }
 
-        let cases: [Case] = self.cases(of: decl)
+        let cases: [Case] = Self.cases(of: decl)
         let casesList: MemberBlockItemListSyntax = .init {
             for `case`: Case in cases {
                 EnumCaseDeclSyntax.init(
@@ -64,7 +67,9 @@ extension ScopedUnionMacro: PeerMacro {
 
         let peer: DeclSyntax = """
         \(AttributeListSyntax.init(attributesOnType))\
-        \(decl.modifiers)enum \(raw: config.peerTypeName): String, CaseIterable, Sendable {
+        \(decl.modifiers)enum \(
+            raw: configuration.peerTypeName
+        ): String, CaseIterable, Sendable {
         \(casesList)
         }
         """
@@ -84,17 +89,17 @@ extension ScopedUnionMacro: MemberMacro {
             return []
         }
 
-        guard let config: Configuration = .init(decoding: attribute, in: context) else {
+        guard let configuration: Configuration = .init(decoding: attribute, in: context) else {
             return []
         }
 
-        let cases: [Case] = self.cases(of: decl)
+        let cases: [Case] = Self.cases(of: decl)
         var members: [DeclSyntax] = []
 
-        // 1. Discriminator `type` property
+        // 1. Discriminator ‘type’ property
         let typeCases: [String] = cases.map { "case .\($0.name): .\($0.name)" }
         let typeProperty: DeclSyntax = """
-        @inlinable \(decl.modifiers)var type: \(raw: config.peerTypeName) {
+        @inlinable \(decl.modifiers)var type: \(raw: configuration.peerTypeName) {
             switch self {
             \(raw: typeCases.joined(separator: "\n    "))
             }
@@ -104,7 +109,7 @@ extension ScopedUnionMacro: MemberMacro {
 
         // 2. Static nil-accessors for cases with associated values
         for `case`: Case in cases where !`case`.parameters.isEmpty {
-            let nils: String = `case`.parameters.map {
+            let arguments: String = `case`.parameters.map {
                 if  let label: TokenSyntax = $0 {
                     "\(label.text): nil"
                 } else {
@@ -113,37 +118,47 @@ extension ScopedUnionMacro: MemberMacro {
             }.joined(separator: ", ")
             let accessor: DeclSyntax = """
             @inlinable \(decl.modifiers)static var \(raw: `case`.name): Self {
-                .\(raw: `case`.name)(\(raw: nils))
+                .\(raw: `case`.name)(\(raw: arguments))
             }
             """
             members.append(accessor)
         }
 
         // 3. Projections
-        for projection: String in config.project {
-            guard let funcDecl: FunctionDeclSyntax = decl.memberBlock.members.compactMap({
-                $0.decl.as(FunctionDeclSyntax.self)
-            }).first(where: {
-                $0.name.text == projection && $0.modifiers.contains { $0.name.text == "static" }
-            }) else {
+        for projection: String in configuration.project {
+            guard let function: FunctionDeclSyntax = decl.memberBlock.members.compactMap(
+                {
+                    $0.decl.as(FunctionDeclSyntax.self)
+                }
+            ).first(
+                where: {
+                    $0.name.text == projection && $0.modifiers.contains {
+                        $0.name.text == "static"
+                    }
+                }
+            ) else {
                 context[.error, attribute] = """
-                enum '\(decl.name.text)' must declare a 'static func \(projection)(_:)' to support projection '\(projection)'
+                enum '\(decl.name.text)' must declare a 'static func \(
+                    projection
+                )(_:)' to support projection '\(
+                    projection
+                )'
                 """
                 continue
             }
 
-            guard let returnType: TypeSyntax = funcDecl.signature.returnClause?.type.trimmed else {
-                context[.error, funcDecl] = """
+            guard let returnType: TypeSyntax = function.signature.returnClause?.type.trimmed else {
+                context[.error, function] = """
                 projection function 'static func \(projection)(_:)' must have a return type
                 """
                 continue
             }
 
-            let projectionCases: [String] = cases.compactMap { `case` in
-                guard `case`.parameters.count == 1 else {
+            let projectionCases: [String] = cases.compactMap {
+                guard $0.parameters.count == 1 else {
                     return nil
                 }
-                return "case .\(`case`.name)(let scope?): Self.\(projection)(scope)"
+                return "case .\($0.name)(let scope?): Self.\(projection)(scope)"
             }
 
             let projectionProperty: DeclSyntax = """
