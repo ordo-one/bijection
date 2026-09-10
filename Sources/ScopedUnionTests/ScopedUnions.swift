@@ -7,9 +7,6 @@ import Testing
         #expect(Action.reset.type == .reset)
         #expect(Action.reset(42).type == .reset)
 
-        #expect(ActionType.start.rawValue == "start")
-        #expect(ActionType.stop.rawValue == "stop")
-        #expect(ActionType.reset.rawValue == "reset")
         #expect(ActionType.allCases == [.start, .stop, .reset])
 
         #expect(Action.reset == .reset(nil))
@@ -87,5 +84,20 @@ import Testing
         #expect(Unsugared.item.tag == nil)
         #expect(Unsugared.other.tag == nil)
         #expect(Unsugared.plain.tag == nil)
+    }
+
+    @Test static func BackingTypes() {
+        #expect(StringBackedType.first.rawValue == "first")
+        #expect(StringBackedType.second.rawValue == "second")
+        #expect(StringBackedType.allCases == [.first, .second])
+
+        let alpha: Substring = SubstringBackedType.alpha.rawValue
+        #expect(alpha == "alpha")
+        let beta: Substring = SubstringBackedType.beta.rawValue
+        #expect(beta == "beta")
+
+        #expect(IntBackedType.low.rawValue == 0)
+        #expect(IntBackedType.medium.rawValue == 1)
+        #expect(IntBackedType.high.rawValue == 2)
     }
 }

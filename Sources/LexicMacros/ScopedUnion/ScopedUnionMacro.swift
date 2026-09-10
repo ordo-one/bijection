@@ -65,11 +65,17 @@ extension ScopedUnionMacro: PeerMacro {
             $0.append($1)
         }
 
+        let inheritance: String = if let backing: TypeSyntax = configuration.backing {
+            ": \(backing), CaseIterable, Sendable"
+        } else {
+            ": CaseIterable, Sendable"
+        }
+
         let peer: DeclSyntax = """
         \(AttributeListSyntax.init(attributesOnType))\
         \(decl.modifiers)enum \(
             raw: configuration.peerTypeName
-        ): String, CaseIterable, Sendable {
+        )\(raw: inheritance) {
         \(casesList)
         }
         """
