@@ -1,7 +1,9 @@
-import Discriminated
+import Projection
 
-extension DiscriminatedUnions {
-    @Discriminated(project: ["owner", "count"]) enum Multi: Equatable {
+extension ProjectionTests {
+    @Projection(through: "owner")
+    @Projection(through: "count")
+    enum Multi: Equatable {
         case text(String?)
         case numbers([Int]?)
         case none

@@ -1,6 +1,6 @@
 import Discriminated
 
-extension DiscriminatedUnions {
+extension DiscriminatedTests {
     @Discriminated enum Action: Equatable {
         case start
         case stop

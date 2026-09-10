@@ -1,13 +1,13 @@
-import Discriminated
+import Projection
 
-extension DiscriminatedUnions {
-    @Discriminated(project: ["id"]) enum Event: Equatable {
+extension ProjectionTests {
+    @Projection(through: "id") enum Single: Equatable {
         case click(Int?)
         case hover(String?)
         case scroll
 
         @inline(always) static func id(_ value: some CustomStringConvertible) -> String {
-            "\(value)"
+            value.description
         }
     }
 }

@@ -12,6 +12,8 @@ let package: Package = .init(
         .library(name: "FileContent", targets: ["FileContent"]),
         .library(name: "Lexic", targets: ["Lexic"]),
         .library(name: "Discriminated", targets: ["Discriminated"]),
+        .library(name: "Ambient", targets: ["Ambient"]),
+        .library(name: "Projection", targets: ["Projection"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "603.0.0"),
@@ -92,6 +94,30 @@ let package: Package = .init(
             name: "DiscriminatedTests",
             dependencies: [
                 .target(name: "Discriminated"),
+            ],
+        ),
+        .target(
+            name: "Ambient",
+            dependencies: [
+                .target(name: "LexicMacros"),
+            ],
+        ),
+        .testTarget(
+            name: "AmbientTests",
+            dependencies: [
+                .target(name: "Ambient"),
+            ],
+        ),
+        .target(
+            name: "Projection",
+            dependencies: [
+                .target(name: "LexicMacros"),
+            ],
+        ),
+        .testTarget(
+            name: "ProjectionTests",
+            dependencies: [
+                .target(name: "Projection"),
             ],
         ),
     ]

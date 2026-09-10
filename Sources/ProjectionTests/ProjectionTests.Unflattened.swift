@@ -1,8 +1,8 @@
-import Discriminated
+import Projection
 
-extension DiscriminatedUnions {
-    @Discriminated(
-        project: ["tag"],
+extension ProjectionTests {
+    @Projection(
+        through: "tag",
         flatten: false
     ) enum Unflattened: Equatable {
         case item(Int?)

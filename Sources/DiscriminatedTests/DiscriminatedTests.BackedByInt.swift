@@ -1,6 +1,6 @@
 import Discriminated
 
-extension DiscriminatedUnions {
+extension DiscriminatedTests {
     @Discriminated(backing: Int.self) enum BackedByInt: Equatable {
         case low
         case medium

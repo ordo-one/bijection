@@ -1,7 +1,7 @@
-import Discriminated
+import Projection
 
-extension DiscriminatedUnions {
-    @Discriminated(project: ["tag"]) enum Flattened: Equatable {
+extension ProjectionTests {
+    @Projection(through: "tag") enum Flattened: Equatable {
         case item(Int?)
         case other(String?)
         case plain
