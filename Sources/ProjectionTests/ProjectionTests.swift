@@ -64,4 +64,18 @@ import Testing
         let node: Recursive = .node(42)
         #expect(node.tag == "42")
     }
+
+    @Test static func NonOptionalPayload() {
+        let click: NonOptional = .click(42)
+        #expect(click.id == "42")
+
+        let hover: NonOptional = .hover("hovering")
+        #expect(hover.id == "hovering")
+
+        let hoverNil: NonOptional = .hover(nil)
+        #expect(hoverNil.id == nil)
+
+        let scroll: NonOptional = .scroll
+        #expect(scroll.id == nil)
+    }
 }

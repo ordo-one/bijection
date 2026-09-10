@@ -54,11 +54,21 @@ extension ProjectionMacro: MemberMacro {
                 continue
             }
             for element: EnumCaseElementSyntax in enumCase.elements {
-                guard element.parameterClause?.parameters.count == 1 else {
+                guard
+                let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
+                parameters.count == 1,
+                let parameter: EnumCaseParameterSyntax = parameters.first else {
                     continue
                 }
+
+                let pattern: String = if parameter.type.is(OptionalTypeSyntax.self) {
+                    "let scope?"
+                } else {
+                    "let scope"
+                }
+
                 projectionCases.append(
-                    "case .\(element.name)(let scope?): Self.\(configuration.through)(scope)"
+                    "case .\(element.name)(\(pattern)): Self.\(configuration.through)(scope)"
                 )
             }
         }
