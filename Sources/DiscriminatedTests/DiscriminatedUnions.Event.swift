@@ -8,7 +8,7 @@ extension DiscriminatedUnions {
         case scroll
 
         @inline(always) static func id(_ value: some CustomStringConvertible) -> String {
-            value.description
+            "\(value)"
         }
     }
 }

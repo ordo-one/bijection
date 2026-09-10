@@ -93,17 +93,17 @@ import Testing
     }
 
     @Test static func BackingTypes() {
-        #expect(StringBackedType.first.rawValue == "first")
-        #expect(StringBackedType.second.rawValue == "second")
-        #expect(StringBackedType.allCases == [.first, .second])
+        #expect(BackedByStringType.first.rawValue == "first")
+        #expect(BackedByStringType.second.rawValue == "second")
+        #expect(BackedByStringType.allCases == [.first, .second])
 
-        let alpha: Substring = SubstringBackedType.alpha.rawValue
+        let alpha: Substring = BackedBySubstringType.alpha.rawValue
         #expect(alpha == "alpha")
-        let beta: Substring = SubstringBackedType.beta.rawValue
+        let beta: Substring = BackedBySubstringType.beta.rawValue
         #expect(beta == "beta")
 
-        #expect(IntBackedType.low.rawValue == 0)
-        #expect(IntBackedType.medium.rawValue == 1)
-        #expect(IntBackedType.high.rawValue == 2)
+        #expect(BackedByIntType.low.rawValue == 0)
+        #expect(BackedByIntType.medium.rawValue == 1)
+        #expect(BackedByIntType.high.rawValue == 2)
     }
 }
