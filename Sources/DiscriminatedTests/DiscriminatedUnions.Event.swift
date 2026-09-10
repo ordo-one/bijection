@@ -1,8 +1,7 @@
 import Discriminated
 
 extension DiscriminatedUnions {
-    @Discriminated(project: ["id"])
-    enum Event: Equatable {
+    @Discriminated(project: ["id"]) enum Event: Equatable {
         case click(Int?)
         case hover(String?)
         case scroll

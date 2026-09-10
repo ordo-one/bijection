@@ -1,8 +1,7 @@
 import Discriminated
 
 extension DiscriminatedUnions {
-    @Discriminated(project: ["owner", "count"])
-    enum Multi: Equatable {
+    @Discriminated(project: ["owner", "count"]) enum Multi: Equatable {
         case text(String?)
         case numbers([Int]?)
         case none

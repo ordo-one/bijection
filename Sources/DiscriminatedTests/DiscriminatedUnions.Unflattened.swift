@@ -1,8 +1,10 @@
 import Discriminated
 
 extension DiscriminatedUnions {
-    @Discriminated(project: ["tag"], flatten: false)
-    enum Unflattened: Equatable {
+    @Discriminated(
+        project: ["tag"],
+        flatten: false
+    ) enum Unflattened: Equatable {
         case item(Int?)
         case other(String?)
         case plain
