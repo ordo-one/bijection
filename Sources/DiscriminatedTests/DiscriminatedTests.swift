@@ -29,4 +29,12 @@ import Testing
         #expect(BackedByIntType.medium.rawValue == 1)
         #expect(BackedByIntType.high.rawValue == 2)
     }
+
+    @Test static func RecursiveEnum() {
+        let leaf: Recursive = .leaf
+        #expect(leaf.type == .leaf)
+
+        let node: Recursive = .node(.leaf)
+        #expect(node.type == .node)
+    }
 }

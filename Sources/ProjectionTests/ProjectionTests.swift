@@ -59,4 +59,9 @@ import Testing
         #expect(Unsugared.other(nil).tag == nil)
         #expect(Unsugared.plain.tag == nil)
     }
+
+    @Test static func RecursiveEnum() {
+        let node: Recursive = .node(42)
+        #expect(node.tag == "42")
+    }
 }

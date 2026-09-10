@@ -9,4 +9,9 @@ import Testing
         #expect(Labeled.single == .single(value: nil))
         #expect(Labeled.multi == .multi(first: nil, second: nil))
     }
+
+    @Test static func RecursiveEnum() {
+        let node: Recursive = .node
+        #expect(node == .node(nil))
+    }
 }
