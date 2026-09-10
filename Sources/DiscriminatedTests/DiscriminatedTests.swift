@@ -4,7 +4,7 @@ import Testing
     @Test static func PureDiscriminator() {
         #expect(Action.start.type == .start)
         #expect(Action.stop.type == .stop)
-        #expect(Action.reset(42).type == .reset)
+        #expect(Action.reset(89).type == .reset)
 
         #expect(ActionType.allCases == [.start, .stop, .reset])
     }

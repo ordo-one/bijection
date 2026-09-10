@@ -7,12 +7,12 @@ extension AmbientTests {
     @ambient enum Unsugared: Equatable {
         case a(Optional<Int>)
         case b(Optional<String>)
-        case defaulted(Swift.Optional<Int> = 42)
+        case defaulted(Swift.Optional<Int> = 89)
         case plain
     }
     #else
     @ambient enum Unsugared: Equatable {
-        case defaulted(_Optional<Int> = 42)
+        case defaulted(_Optional<Int> = 89)
         case plain
     }
     #endif

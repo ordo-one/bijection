@@ -21,10 +21,10 @@ import Testing
         #expect(Enum.defaultOptionalWithNil == .defaultOptionalWithNil(tag: nil))
         #expect(Enum.defaultOptionalWithout == .defaultOptionalWithout(status: nil))
         #expect(Enum.defaultMultiple == .defaultMultiple(x: 1, y: "hello", z: nil))
-        #expect(Enum.defaultUnlabeled == .defaultUnlabeled(42))
+        #expect(Enum.defaultUnlabeled == .defaultUnlabeled(89))
     }
 
     @Test static func UnsugaredPayload() {
-        #expect(Unsugared.defaulted == .defaulted(42))
+        #expect(Unsugared.defaulted == .defaulted(89))
     }
 }

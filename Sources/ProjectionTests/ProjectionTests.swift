@@ -25,8 +25,8 @@ import Testing
     }
 
     @Test static func FlattenedOptional() {
-        let tagItem: String? = Flattened.item(42).tag
-        #expect(tagItem == "42")
+        let tagItem: String? = Flattened.item(89).tag
+        #expect(tagItem == "89")
 
         let tagOther: String? = Flattened.other("").tag
         #expect(tagOther == nil)
@@ -37,8 +37,8 @@ import Testing
     }
 
     @Test static func UnflattenedOptional() {
-        let tagItem: String?? = Unflattened.item(42).tag
-        #expect(tagItem == .some(.some("42")))
+        let tagItem: String?? = Unflattened.item(89).tag
+        #expect(tagItem == .some(.some("89")))
 
         let tagOther: String?? = Unflattened.other("").tag
         #expect(tagOther == .some(nil))
@@ -49,8 +49,8 @@ import Testing
     }
 
     @Test static func UnsugaredOptional() {
-        let tagItem: Optional<String>? = Unsugared.item(42).tag
-        #expect(tagItem == .some(.some("42")))
+        let tagItem: Optional<String>? = Unsugared.item(89).tag
+        #expect(tagItem == .some(.some("89")))
 
         let tagOther: Optional<String>? = Unsugared.other("").tag
         #expect(tagOther == .some(nil))
@@ -61,13 +61,13 @@ import Testing
     }
 
     @Test static func RecursiveEnum() {
-        let node: Recursive = .node(42)
-        #expect(node.tag == "42")
+        let node: Recursive = .node(89)
+        #expect(node.tag == "89")
     }
 
     @Test static func NonOptionalPayload() {
-        let click: NonOptional = .click(42)
-        #expect(click.id == "42")
+        let click: NonOptional = .click(89)
+        #expect(click.id == "89")
 
         let hover: NonOptional = .hover("hovering")
         #expect(hover.id == "hovering")
@@ -80,8 +80,8 @@ import Testing
     }
 
     @Test static func ParenthesizedPayload() {
-        let tagItem: String? = Parenthesized.item(42).tag
-        #expect(tagItem == "42")
+        let tagItem: String? = Parenthesized.item(89).tag
+        #expect(tagItem == "89")
 
         let tagOther: String? = Parenthesized.other("test").tag
         #expect(tagOther == "test")

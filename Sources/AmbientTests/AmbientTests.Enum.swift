@@ -9,6 +9,6 @@ extension AmbientTests {
         case defaultOptionalWithNil(tag: String? = nil)
         case defaultOptionalWithout(status: Bool?)
         case defaultMultiple(x: Int = 1, y: String? = "hello", z: Double?)
-        case defaultUnlabeled(Int = 42)
+        case defaultUnlabeled(Int = 89)
     }
 }
