@@ -23,8 +23,9 @@ extension AmbientMacro: MemberMacro {
                 continue
             }
             for element: EnumCaseElementSyntax in enumCase.elements {
-                guard let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
-                    !parameters.isEmpty else {
+                guard
+                let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
+                   !parameters.isEmpty else {
                     continue
                 }
 

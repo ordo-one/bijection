@@ -40,7 +40,8 @@ extension ProjectionMacro: MemberMacro {
 
         guard let returnType: TypeSyntax = function.signature.returnClause?.type.trimmed else {
             context[.error, function] = """
-            projection function 'static func \(configuration.through)(_:)' must have a return type
+            projection function 'static func \(configuration.through)(_:)' \
+            must have a return type
             """
             return []
         }
