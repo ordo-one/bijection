@@ -52,4 +52,40 @@ import Testing
 
         #expect(LabeledType.allCases == [.single, .multi, .plain])
     }
+
+    @Test static func FlattenedOptional() {
+        let tagItem: String? = Flattened.item(42).tag
+        #expect(tagItem == "42")
+
+        let tagOther: String? = Flattened.other("").tag
+        #expect(tagOther == nil)
+
+        #expect(Flattened.item.tag == nil)
+        #expect(Flattened.other.tag == nil)
+        #expect(Flattened.plain.tag == nil)
+    }
+
+    @Test static func UnflattenedOptional() {
+        let tagItem: String?? = Unflattened.item(42).tag
+        #expect(tagItem == .some(.some("42")))
+
+        let tagOther: String?? = Unflattened.other("").tag
+        #expect(tagOther == .some(nil))
+
+        #expect(Unflattened.item.tag == nil)
+        #expect(Unflattened.other.tag == nil)
+        #expect(Unflattened.plain.tag == nil)
+    }
+
+    @Test static func UnsugaredOptional() {
+        let tagItem: Optional<String>? = Unsugared.item(42).tag
+        #expect(tagItem == .some(.some("42")))
+
+        let tagOther: Optional<String>? = Unsugared.other("").tag
+        #expect(tagOther == .some(nil))
+
+        #expect(Unsugared.item.tag == nil)
+        #expect(Unsugared.other.tag == nil)
+        #expect(Unsugared.plain.tag == nil)
+    }
 }

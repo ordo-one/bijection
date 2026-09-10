@@ -161,8 +161,15 @@ extension ScopedUnionMacro: MemberMacro {
                 return "case .\($0.name)(let scope?): Self.\(projection)(scope)"
             }
 
+            let propertyType: TypeSyntax = if configuration.flatten,
+                returnType.is(OptionalTypeSyntax.self) {
+                returnType
+            } else {
+                "\(returnType)?"
+            }
+
             let projectionProperty: DeclSyntax = """
-            @inlinable \(decl.modifiers)var \(raw: projection): \(returnType)? {
+            @inlinable \(decl.modifiers)var \(raw: projection): \(propertyType) {
                 switch self {
                 \(raw: projectionCases.joined(separator: "\n    "))
                 default:
