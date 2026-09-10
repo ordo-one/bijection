@@ -78,4 +78,16 @@ import Testing
         let scroll: NonOptional = .scroll
         #expect(scroll.id == nil)
     }
+
+    @Test static func ParenthesizedPayload() {
+        let tagItem: String? = Parenthesized.item(42).tag
+        #expect(tagItem == "42")
+
+        let tagOther: String? = Parenthesized.other("test").tag
+        #expect(tagOther == "test")
+
+        #expect(Parenthesized.item(nil).tag == nil)
+        #expect(Parenthesized.other(nil).tag == nil)
+        #expect(Parenthesized.plain.tag == nil)
+    }
 }

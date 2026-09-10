@@ -36,7 +36,7 @@ extension AmbientMacro: MemberMacro {
                 for parameter: EnumCaseParameterSyntax in parameters {
                     if  parameter.type.isUnsugaredOptional {
                         context[.warning, parameter.type] = """
-                        spelling ‘\(parameter.type)’ will not be optimized; \
+                        spelling ‘\(parameter.type.trimmed)’ will not be optimized; \
                         use sugared optional ‘?’ instead
                         """
                     }

@@ -23,7 +23,7 @@ extension ProjectionMacro: MemberMacro {
             { $0.decl.as(FunctionDeclSyntax.self) }
         ).first(
             where: {
-                $0.name.text == configuration.through && $0.modifiers.contains {
+                $0.name.unescaped == configuration.through && $0.modifiers.contains {
                     $0.name.text == "static"
                 }
             }
@@ -48,7 +48,8 @@ extension ProjectionMacro: MemberMacro {
 
         if returnType.isUnsugaredOptional {
             context[.warning, returnType] = """
-            spelling ‘\(returnType)’ will not be optimized; use sugared optional ‘?’ instead
+            spelling ‘\(returnType.trimmed)’ will not be optimized; \
+            use sugared optional ‘?’ instead
             """
         }
 
@@ -74,7 +75,7 @@ extension ProjectionMacro: MemberMacro {
                     """
                 }
 
-                let pattern: String = if parameter.type.is(OptionalTypeSyntax.self) {
+                let pattern: String = if parameter.type.isOptional {
                     "let scope?"
                 } else {
                     "let scope"
@@ -87,7 +88,7 @@ extension ProjectionMacro: MemberMacro {
         }
 
         let propertyType: TypeSyntax = if configuration.flatten,
-            returnType.is(OptionalTypeSyntax.self) {
+            returnType.isOptional {
             returnType
         } else {
             "\(returnType)?"
