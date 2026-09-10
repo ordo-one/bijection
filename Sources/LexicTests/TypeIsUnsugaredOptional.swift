@@ -19,6 +19,12 @@ import Testing
 
         let member: TypeSyntax = "`Swift`.`Optional`<Int>"
         #expect(member.isUnsugaredOptional)
+
+        let tokenSingle: TokenSyntax = .identifier("`Optional`")
+        #expect(tokenSingle.unescaped == "Optional")
+
+        let tokenMultiple: TokenSyntax = .identifier("```Optional```")
+        #expect(tokenMultiple.unescaped == "Optional")
     }
 
     @Test static func Parenthesized() {

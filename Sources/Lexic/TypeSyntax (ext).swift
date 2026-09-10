@@ -35,13 +35,8 @@ extension TypeSyntax {
                 return true
             }
             switch self.name.tokenKind {
-            case .identifier(let identifier):
-                var identifier: Substring = identifier.drop { $0 == "`" }
-                while case "`"? = identifier.last {
-                    identifier.removeLast()
-                }
-
-                return symbol == identifier
+            case .identifier:
+                return self.name.unescaped == symbol
 
             case .keyword(.Self):
                 return symbol == "Self"
@@ -98,19 +93,16 @@ extension TypeSyntax {
 
     public var isUnsugaredOptional: Bool {
         if  let identifier: IdentifierTypeSyntax = self.as(IdentifierTypeSyntax.self) {
-            let name: String = identifier.name.text
-            return (name == "Optional" || name == "`Optional`")
+            return identifier.name.unescaped == "Optional"
                 && identifier.genericArgumentClause?.arguments.count == 1
         }
         if  let member: MemberTypeSyntax = self.as(MemberTypeSyntax.self) {
-            let name: String = member.name.text
-            guard name == "Optional" || name == "`Optional`",
+            guard member.name.unescaped == "Optional",
                   member.genericArgumentClause?.arguments.count == 1,
                   let base: IdentifierTypeSyntax = member.baseType.as(IdentifierTypeSyntax.self) else {
                 return false
             }
-            let baseName: String = base.name.text
-            return baseName == "Swift" || baseName == "`Swift`"
+            return base.name.unescaped == "Swift"
         }
         if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
             return attributed.baseType.isUnsugaredOptional
