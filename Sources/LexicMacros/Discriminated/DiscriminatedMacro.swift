@@ -26,7 +26,7 @@ extension DiscriminatedMacro: PeerMacro {
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@Discriminated' must be applied to an enum"
+            context[.error, decl] = "‘@Discriminated’ must be applied to an enum"
             return []
         }
 
@@ -58,7 +58,7 @@ extension DiscriminatedMacro: PeerMacro {
             }
             switch identifier.name.text {
             case "frozen": break
-            case "usableFromInline": break
+            case "usableFromInline", "_usableFromInline": break
             default: return
             }
 
@@ -90,7 +90,7 @@ extension DiscriminatedMacro: MemberMacro {
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@Discriminated' must be applied to an enum"
+            context[.error, decl] = "‘@Discriminated’ must be applied to an enum"
             return []
         }
 

@@ -11,7 +11,7 @@ extension AmbientMacro: MemberMacro {
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@ambient' must be applied to an enum"
+            context[.error, decl] = "‘@ambient’ must be applied to an enum"
             return []
         }
 
@@ -26,7 +26,7 @@ extension AmbientMacro: MemberMacro {
             for element: EnumCaseElementSyntax in enumCase.elements {
                 guard
                 let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
-                   !parameters.isEmpty else {
+                    !parameters.isEmpty else {
                     continue
                 }
 

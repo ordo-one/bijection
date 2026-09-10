@@ -11,7 +11,7 @@ extension ProjectionMacro: MemberMacro {
         in context: some MacroExpansionContext
     ) -> [DeclSyntax] {
         guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
-            context[.error, decl] = "'@Projection' must be applied to an enum"
+            context[.error, decl] = "‘@Projection’ must be applied to an enum"
             return []
         }
 
@@ -29,18 +29,18 @@ extension ProjectionMacro: MemberMacro {
             }
         ) else {
             context[.error, attribute] = """
-            enum '\(decl.name.text)' must declare a 'static func \(
+            enum ‘\(decl.name.text)’ must declare a ‘static func \(
                 configuration.through
-            )(_:)' to support projection '\(
+            )(_:)’ to support projection ‘\(
                 configuration.through
-            )'
+            )’
             """
             return []
         }
 
         guard let returnType: TypeSyntax = function.signature.returnClause?.type.trimmed else {
             context[.error, function] = """
-            projection function 'static func \(configuration.through)(_:)' \
+            projection function ‘static func \(configuration.through)(_:)’ \
             must have a return type
             """
             return []

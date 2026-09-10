@@ -25,6 +25,6 @@ import Testing
     }
 
     @Test static func UnsugaredPayload() {
-        #expect(AmbientTests.Unsugared.defaulted == .defaulted(42))
+        #expect(Unsugared.defaulted == .defaulted(42))
     }
 }
