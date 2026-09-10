@@ -1,0 +1,163 @@
+import Lexic
+import SwiftSyntax
+import SwiftSyntaxMacros
+
+struct ScopedUnionMacro {
+    static func cases(of decl: EnumDeclSyntax) -> [Case] {
+        var cases: [Case] = []
+        for member: MemberBlockItemSyntax in decl.memberBlock.members {
+            guard let caseDecl: EnumCaseDeclSyntax = member.decl.as(EnumCaseDeclSyntax.self) else {
+                continue
+            }
+            for element: EnumCaseElementSyntax in caseDecl.elements {
+                cases.append(.init(from: element))
+            }
+        }
+        return cases
+    }
+}
+extension ScopedUnionMacro: PeerMacro {
+    static func expansion(
+        of attribute: AttributeSyntax,
+        providingPeersOf decl: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) -> [DeclSyntax] {
+        guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
+            context[.error, decl] = "'@ScopedUnion' must be applied to an enum"
+            return []
+        }
+
+        guard let config: Configuration = .init(decoding: attribute, in: context) else {
+            return []
+        }
+
+        let cases: [Case] = self.cases(of: decl)
+        let casesList: MemberBlockItemListSyntax = .init {
+            for `case`: Case in cases {
+                EnumCaseDeclSyntax.init(
+                    caseKeyword: .keyword(.case, trailingTrivia: .spaces(1))
+                ) {
+                    EnumCaseElementSyntax.init(
+                        name: `case`.name,
+                        trailingTrivia: .newlines(1)
+                    )
+                }
+            }
+        }
+
+        let attributesOnType: [AttributeListSyntax.Element] = decl.attributes.reduce(into: []) {
+            guard
+            case .attribute(let attribute) = $1,
+            let identifier: IdentifierTypeSyntax = attribute.attributeName.as(
+                IdentifierTypeSyntax.self
+            ) else {
+                return
+            }
+            switch identifier.name.text {
+            case "frozen": break
+            case "usableFromInline": break
+            default: return
+            }
+
+            $0.append($1)
+        }
+
+        let peer: DeclSyntax = """
+        \(AttributeListSyntax.init(attributesOnType))\
+        \(decl.modifiers)enum \(raw: config.peerTypeName): String, CaseIterable, Sendable {
+        \(casesList)
+        }
+        """
+
+        return [peer]
+    }
+}
+extension ScopedUnionMacro: MemberMacro {
+    static func expansion(
+        of attribute: AttributeSyntax,
+        providingMembersOf decl: some DeclGroupSyntax,
+        conformingTo _: [TypeSyntax],
+        in context: some MacroExpansionContext
+    ) -> [DeclSyntax] {
+        guard let decl: EnumDeclSyntax = decl.as(EnumDeclSyntax.self) else {
+            context[.error, decl] = "'@ScopedUnion' must be applied to an enum"
+            return []
+        }
+
+        guard let config: Configuration = .init(decoding: attribute, in: context) else {
+            return []
+        }
+
+        let cases: [Case] = self.cases(of: decl)
+        var members: [DeclSyntax] = []
+
+        // 1. Discriminator `type` property
+        let typeCases: [String] = cases.map { "case .\($0.name): .\($0.name)" }
+        let typeProperty: DeclSyntax = """
+        @inlinable \(decl.modifiers)var type: \(raw: config.peerTypeName) {
+            switch self {
+            \(raw: typeCases.joined(separator: "\n    "))
+            }
+        }
+        """
+        members.append(typeProperty)
+
+        // 2. Static nil-accessors for cases with associated values
+        for `case`: Case in cases where !`case`.parameters.isEmpty {
+            let nils: String = `case`.parameters.map {
+                if  let label: TokenSyntax = $0 {
+                    "\(label.text): nil"
+                } else {
+                    "nil"
+                }
+            }.joined(separator: ", ")
+            let accessor: DeclSyntax = """
+            @inlinable \(decl.modifiers)static var \(raw: `case`.name): Self {
+                .\(raw: `case`.name)(\(raw: nils))
+            }
+            """
+            members.append(accessor)
+        }
+
+        // 3. Projections
+        for projection: String in config.project {
+            guard let funcDecl: FunctionDeclSyntax = decl.memberBlock.members.compactMap({
+                $0.decl.as(FunctionDeclSyntax.self)
+            }).first(where: {
+                $0.name.text == projection && $0.modifiers.contains { $0.name.text == "static" }
+            }) else {
+                context[.error, attribute] = """
+                enum '\(decl.name.text)' must declare a 'static func \(projection)(_:)' to support projection '\(projection)'
+                """
+                continue
+            }
+
+            guard let returnType: TypeSyntax = funcDecl.signature.returnClause?.type.trimmed else {
+                context[.error, funcDecl] = """
+                projection function 'static func \(projection)(_:)' must have a return type
+                """
+                continue
+            }
+
+            let projectionCases: [String] = cases.compactMap { `case` in
+                guard `case`.parameters.count == 1 else {
+                    return nil
+                }
+                return "case .\(`case`.name)(let scope?): Self.\(projection)(scope)"
+            }
+
+            let projectionProperty: DeclSyntax = """
+            @inlinable \(decl.modifiers)var \(raw: projection): \(returnType)? {
+                switch self {
+                \(raw: projectionCases.joined(separator: "\n    "))
+                default:
+                    nil
+                }
+            }
+            """
+            members.append(projectionProperty)
+        }
+
+        return members
+    }
+}

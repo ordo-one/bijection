@@ -11,6 +11,7 @@ let package: Package = .init(
         .library(name: "Bijection", targets: ["Bijection"]),
         .library(name: "FileContent", targets: ["FileContent"]),
         .library(name: "Lexic", targets: ["Lexic"]),
+        .library(name: "ScopedUnion", targets: ["ScopedUnion"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "603.0.0"),
@@ -80,6 +81,18 @@ let package: Package = .init(
             dependencies: [
                 .target(name: "Lexic"),
             ]
+        ),
+        .target(
+            name: "ScopedUnion",
+            dependencies: [
+                .target(name: "LexicMacros"),
+            ],
+        ),
+        .testTarget(
+            name: "ScopedUnionTests",
+            dependencies: [
+                .target(name: "ScopedUnion"),
+            ],
         ),
     ]
 )
