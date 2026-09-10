@@ -115,5 +115,24 @@ extension TypeSyntax {
         }
         return false
     }
+
+    public var isOptional: Bool {
+        if  self.is(OptionalTypeSyntax.self) {
+            return true
+        }
+        if  self.isUnsugaredOptional {
+            return true
+        }
+        if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
+            return attributed.baseType.isOptional
+        }
+        if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
+            tuple.elements.count == 1,
+            let first: TupleTypeElementSyntax = tuple.elements.first,
+            first.firstName == nil {
+            return first.type.isOptional
+        }
+        return false
+    }
 }
 

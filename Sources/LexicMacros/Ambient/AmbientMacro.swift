@@ -1,3 +1,4 @@
+import Lexic
 import SwiftSyntax
 import SwiftSyntaxMacros
 
@@ -29,18 +30,40 @@ extension AmbientMacro: MemberMacro {
                     continue
                 }
 
-                let arguments: String = parameters.map {
-                    if  let label: TokenSyntax = $0.firstName, label.text != "_" {
-                        "\(label.text): nil"
+                var arguments: [String] = []
+                var canSynthesize: Bool = true
+
+                for parameter: EnumCaseParameterSyntax in parameters {
+                    let isOptional: Bool = parameter.type.isOptional
+                    if  let defaultValue: InitializerClauseSyntax = parameter.defaultValue {
+                        let value: String = defaultValue.value.trimmedDescription
+                        if  let label: TokenSyntax = parameter.firstName, label.text != "_" {
+                            arguments.append("\(label.text): \(value)")
+                        } else {
+                            arguments.append(value)
+                        }
+                    } else if isOptional {
+                        if  let label: TokenSyntax = parameter.firstName, label.text != "_" {
+                            arguments.append("\(label.text): nil")
+                        } else {
+                            arguments.append("nil")
+                        }
                     } else {
-                        "nil"
+                        canSynthesize = false
+                        break
                     }
-                }.joined(separator: ", ")
+                }
+
+                guard canSynthesize else {
+                    continue
+                }
+
+                let argumentsList: String = arguments.joined(separator: ", ")
 
                 let accessor: DeclSyntax = """
                 \(raw: decl.inlinable)\(decl.modifiersForMember)static var \
                 \(raw: element.name): Self {
-                    .\(raw: element.name)(\(raw: arguments))
+                    .\(raw: element.name)(\(raw: argumentsList))
                 }
                 """
                 members.append(accessor)
