@@ -5,7 +5,7 @@ import Testing
         #expect(Action.start.type == .start)
         #expect(Action.stop.type == .stop)
         #expect(Action.reset.type == .reset)
-        #expect(Action.reset(42).type == .reset)
+        #expect(Action.reset(89).type == .reset)
 
         #expect(ActionType.allCases == [.start, .stop, .reset])
 
@@ -57,8 +57,8 @@ import Testing
     }
 
     @Test static func FlattenedOptional() {
-        let tagItem: String? = Flattened.item(42).tag
-        #expect(tagItem == "42")
+        let tagItem: String? = Flattened.item(89).tag
+        #expect(tagItem == "89")
 
         let tagOther: String? = Flattened.other("").tag
         #expect(tagOther == nil)
@@ -69,11 +69,11 @@ import Testing
     }
 
     @Test static func UnflattenedOptional() {
-        let tagItem: String?? = Unflattened.item(42).tag
-        #expect(tagItem == .some(.some("42")))
+        let item: String?? = Unflattened.item(89).tag
+        #expect(item == .some(.some("89")))
 
-        let tagOther: String?? = Unflattened.other("").tag
-        #expect(tagOther == .some(nil))
+        let other: String?? = Unflattened.other("").tag
+        #expect(other == .some(nil))
 
         #expect(Unflattened.item.tag == nil)
         #expect(Unflattened.other.tag == nil)
@@ -81,11 +81,11 @@ import Testing
     }
 
     @Test static func UnsugaredOptional() {
-        let tagItem: Optional<String>? = Unsugared.item(42).tag
-        #expect(tagItem == .some(.some("42")))
+        let item: Optional<String>? = Unsugared.item(89).tag
+        #expect(item == .some(.some("89")))
 
-        let tagOther: Optional<String>? = Unsugared.other("").tag
-        #expect(tagOther == .some(nil))
+        let other: Optional<String>? = Unsugared.other("").tag
+        #expect(other == .some(nil))
 
         #expect(Unsugared.item.tag == nil)
         #expect(Unsugared.other.tag == nil)
