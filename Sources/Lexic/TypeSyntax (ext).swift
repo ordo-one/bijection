@@ -97,9 +97,12 @@ extension TypeSyntax {
                 && identifier.genericArgumentClause?.arguments.count == 1
         }
         if  let member: MemberTypeSyntax = self.as(MemberTypeSyntax.self) {
-            guard member.name.unescaped == "Optional",
-                  member.genericArgumentClause?.arguments.count == 1,
-                  let base: IdentifierTypeSyntax = member.baseType.as(IdentifierTypeSyntax.self) else {
+            guard
+            member.name.unescaped == "Optional",
+            member.genericArgumentClause?.arguments.count == 1,
+            let base: IdentifierTypeSyntax = member.baseType.as(
+                IdentifierTypeSyntax.self
+            ) else {
                 return false
             }
             return base.name.unescaped == "Swift"
@@ -108,9 +111,9 @@ extension TypeSyntax {
             return attributed.baseType.isUnsugaredOptional
         }
         if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
-            tuple.elements.count == 1,
+                tuple.elements.count == 1,
             let first: TupleTypeElementSyntax = tuple.elements.first,
-            first.firstName == nil {
+                first.firstName == nil {
             return first.type.isUnsugaredOptional
         }
         return false
@@ -124,12 +127,11 @@ extension TypeSyntax {
             return attributed.baseType.isOptional
         }
         if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
-            tuple.elements.count == 1,
+                tuple.elements.count == 1,
             let first: TupleTypeElementSyntax = tuple.elements.first,
-            first.firstName == nil {
+                first.firstName == nil {
             return first.type.isOptional
         }
         return false
     }
 }
-

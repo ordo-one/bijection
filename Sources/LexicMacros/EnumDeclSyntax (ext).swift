@@ -13,14 +13,14 @@ extension EnumDeclSyntax {
                 return false
             }
             if  let identifier: IdentifierTypeSyntax = attribute.attributeName.as(
-                IdentifierTypeSyntax.self
-            ) {
+                    IdentifierTypeSyntax.self
+                ) {
                 return identifier.name.text == "usableFromInline"
                     || identifier.name.text == "_usableFromInline"
             }
             if  let member: MemberTypeSyntax = attribute.attributeName.as(
-                MemberTypeSyntax.self
-            ) {
+                    MemberTypeSyntax.self
+                ) {
                 return member.name.text == "usableFromInline"
                     || member.name.text == "_usableFromInline"
             }

@@ -25,15 +25,15 @@ extension AmbientMacro: MemberMacro {
             }
             for element: EnumCaseElementSyntax in enumCase.elements {
                 guard
-                let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
-                    !parameters.isEmpty else {
+                let list: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
+                   !list.isEmpty else {
                     continue
                 }
 
                 var arguments: [String] = []
                 var canSynthesize: Bool = true
 
-                for parameter: EnumCaseParameterSyntax in parameters {
+                for parameter: EnumCaseParameterSyntax in list {
                     if  parameter.type.isUnsugaredOptional {
                         context[.warning, parameter.type] = """
                         spelling ‘\(parameter.type.trimmed)’ will not be optimized; \
