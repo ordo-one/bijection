@@ -38,7 +38,8 @@ extension AmbientMacro: MemberMacro {
                 }.joined(separator: ", ")
 
                 let accessor: DeclSyntax = """
-                \(raw: decl.inlinable)\(decl.memberModifiers)static var \(raw: element.name): Self {
+                \(raw: decl.inlinable)\(decl.modifiersForMember)static var \
+                \(raw: element.name): Self {
                     .\(raw: element.name)(\(raw: arguments))
                 }
                 """

@@ -36,7 +36,7 @@ extension EnumDeclSyntax {
         self.isInlinable ? "@inlinable " : ""
     }
 
-    var memberModifiers: DeclModifierListSyntax {
+    var modifiersForMember: DeclModifierListSyntax {
         self.modifiers.filter { $0.name.text != "indirect" }
     }
 }

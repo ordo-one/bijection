@@ -46,6 +46,12 @@ extension ProjectionMacro: MemberMacro {
             return []
         }
 
+        if returnType.isUnsugaredOptional {
+            context[.warning, returnType] = """
+            spelling ‘\(returnType)’ will not be optimized; use sugared optional ‘?’ instead
+            """
+        }
+
         var projectionCases: [String] = []
         for member: MemberBlockItemSyntax in decl.memberBlock.members {
             guard let enumCase: EnumCaseDeclSyntax = member.decl.as(
@@ -55,10 +61,17 @@ extension ProjectionMacro: MemberMacro {
             }
             for element: EnumCaseElementSyntax in enumCase.elements {
                 guard
-                let parameters: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
-                parameters.count == 1,
-                let parameter: EnumCaseParameterSyntax = parameters.first else {
+                let list: EnumCaseParameterListSyntax = element.parameterClause?.parameters,
+                    list.count == 1,
+                let parameter: EnumCaseParameterSyntax = list.first else {
                     continue
+                }
+
+                if parameter.type.isUnsugaredOptional {
+                    context[.warning, parameter.type] = """
+                    spelling ‘\(parameter.type.trimmed)’ will not be optimized; \
+                    use sugared optional ‘?’ instead
+                    """
                 }
 
                 let pattern: String = if parameter.type.is(OptionalTypeSyntax.self) {
@@ -81,7 +94,8 @@ extension ProjectionMacro: MemberMacro {
         }
 
         let projectionProperty: DeclSyntax = """
-        \(raw: decl.inlinable)\(decl.memberModifiers)var \(raw: configuration.through): \(propertyType) {
+        \(raw: decl.inlinable)\(decl.modifiersForMember)var \
+        \(raw: configuration.through): \(propertyType) {
             switch self {
             \(raw: projectionCases.joined(separator: "\n    "))
             default:

@@ -95,4 +95,33 @@ extension TypeSyntax {
             return false
         }
     }
+
+    public var isUnsugaredOptional: Bool {
+        if  let identifier: IdentifierTypeSyntax = self.as(IdentifierTypeSyntax.self) {
+            let name: String = identifier.name.text
+            return (name == "Optional" || name == "`Optional`")
+                && identifier.genericArgumentClause?.arguments.count == 1
+        }
+        if  let member: MemberTypeSyntax = self.as(MemberTypeSyntax.self) {
+            let name: String = member.name.text
+            guard name == "Optional" || name == "`Optional`",
+                  member.genericArgumentClause?.arguments.count == 1,
+                  let base: IdentifierTypeSyntax = member.baseType.as(IdentifierTypeSyntax.self) else {
+                return false
+            }
+            let baseName: String = base.name.text
+            return baseName == "Swift" || baseName == "`Swift`"
+        }
+        if  let attributed: AttributedTypeSyntax = self.as(AttributedTypeSyntax.self) {
+            return attributed.baseType.isUnsugaredOptional
+        }
+        if  let tuple: TupleTypeSyntax = self.as(TupleTypeSyntax.self),
+            tuple.elements.count == 1,
+            let first: TupleTypeElementSyntax = tuple.elements.first,
+            first.firstName == nil {
+            return first.type.isUnsugaredOptional
+        }
+        return false
+    }
 }
+
